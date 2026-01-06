@@ -1,0 +1,37 @@
+# backend/stripe_client.py
+import stripe
+from flask import current_app
+
+class StripeClient:
+    def __init__(self):
+        stripe.api_key = current_app.config['STRIPE_SECRET_KEY']
+    
+    def create_payment(self, amount, currency='usd', description=''):
+        """创建Stripe支付"""
+        try:
+            intent = stripe.PaymentIntent.create(
+                amount=int(amount * 100),  # 转换为分
+                currency=currency,
+                description=description,
+                automatic_payment_methods={'enabled': True},
+            )
+            return {
+                'success': True,
+                'client_secret': intent.client_secret,
+                'payment_intent_id': intent.id
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def confirm_payment(self, payment_intent_id):
+        """确认支付状态"""
+        try:
+            intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+            return {
+                'success': True,
+                'status': intent.status,
+                'amount': intent.amount / 100,
+                'currency': intent.currency
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
