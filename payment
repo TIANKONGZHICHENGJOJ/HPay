@@ -1,0 +1,8 @@
+# 1. 申请Stripe账户
+# 2. 配置密钥到.env文件
+# 3. 运行一键启动
+bash QUICK_FIX.sh
+
+# 4. 测试Stripe支付
+curl -X POST http://localhost:5000/api/stripe/create-payment \
+  -d '{"amount": 100}'
