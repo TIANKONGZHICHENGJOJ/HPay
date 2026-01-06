@@ -1,0 +1,13 @@
+# 在backend/app.py中添加
+from backend.stripe_client import StripeClient
+
+@app.route('/api/stripe/create-payment', methods=['POST'])
+def create_stripe_payment():
+    data = request.get_json()
+    stripe_client = StripeClient()
+    result = stripe_client.create_payment(
+        amount=data['amount'],
+        currency=data.get('currency', 'usd'),
+        description=data.get('description', 'Stripe Payment')
+    )
+    return jsonify(result)
